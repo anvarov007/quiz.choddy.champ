@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zehn Jangi — Real-Vaqt Onlayn Boshqotirma Musobaqasi</title>
+    <meta name="description"
+        content="Ko'p foydalanuvchili onlayn mantiqiy va matematik boshqotirma o'yini. Real vaqt rejimida do'stlaringiz bilan bellashing va 1-o'rinni egallang!">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <!-- Confetti canvas for celebrations -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Floating Reactions Container -->
+    <div id="reactions-container" class="reactions-container" aria-hidden="true"></div>
+
+    <!-- Background Animated Glow Orbs -->
+    <div class="bg-glow-orb orb-1"></div>
+    <div class="bg-glow-orb orb-2"></div>
+    <div class="bg-glow-orb orb-3"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-logo">
+                    <span class="logo-icon">⚡</span>
+                </div>
+                <div class="brand-text">
+                    <h1>ZEHN <span>JANGI</span></h1>
+                    <p class="brand-tagline">Onlayn Aql va Mantiq Bellashuvi</p>
+                </div>
+            </div>
+
+            <div class="header-status">
+                <div class="server-badge" id="server-status-badge">
+                    <span class="status-dot"></span>
+                    <span id="server-status-text">Serverga ulanmoqda...</span>
+                </div>
+                <div class="online-pill" id="online-counter-pill">
+                    <span class="online-icon">👥</span>
+                    <span id="header-online-count">0</span> onlayn
+                </div>
+                <button class="btn-qr-invite" id="btn-open-qr-modal" title="QR Kod orqali o'yinchilarni taklif qilish"
+                    aria-label="QR Kod">
+                    <span class="qr-btn-icon">📱</span>
+                    <span class="qr-btn-text">QR Kod</span>
+                </button>
+                <button class="icon-toggle-btn" id="sound-toggle-btn" title="Ovozni yoqish/o'chirish"
+                    aria-label="Ovoz sozlamasi">
+                    <span id="sound-icon">🔊</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-layout">
+
+        <!-- ========================================== -->
+        <!-- SCREEN 1: KIRISH TIZIMI (JOIN MODAL)      -->
+        <!-- ========================================== -->
+        <section id="login-screen" class="screen-view active">
+            <div class="login-card glass-panel">
+                <div class="login-header">
+                    <div class="login-badge">🎮 Boshqotirma Musobaqasi</div>
+                    <h2 class="neon-title">Xush Kelibsiz!</h2>
+                    <p class="login-desc">Ismingizni tanlang, avatar tanlang va 20+ o'yinchi bilan real vaqtda birinchi
+                        o'rin uchun bellashing!</p>
+                </div>
+
+                <form id="login-form" class="login-form" autocomplete="off">
+                    <!-- Avatar Selection -->
+                    <div class="form-group">
+                        <label class="form-label">Avataringizni tanlang:</label>
+                        <div class="avatar-selector" id="avatar-selector">
+                            <button type="button" class="avatar-btn active" data-avatar="🧠">🧠</button>
+                            <button type="button" class="avatar-btn" data-avatar="⚡">⚡</button>
+                            <button type="button" class="avatar-btn" data-avatar="🦊">🦊</button>
+                            <button type="button" class="avatar-btn" data-avatar="🤖">🤖</button>
+                            <button type="button" class="avatar-btn" data-avatar="🦁">🦁</button>
+                            <button type="button" class="avatar-btn" data-avatar="🚀">🚀</button>
+                            <button type="button" class="avatar-btn" data-avatar="👑">👑</button>
+                            <button type="button" class="avatar-btn" data-avatar="🎯">🎯</button>
+                        </div>
+                    </div>
+
+                    <!-- Nickname Input -->
+                    <div class="form-group">
+                        <label for="player-name-input" class="form-label">Ismingiz yoki Taxallusingiz:</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="player-name-input" class="custom-input"
+                                placeholder="Ismingizni yozing (masalan: Sardor)..." maxlength="20" autofocus>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="btn-join-game" class="btn-primary-neon">
+                        <span class="btn-text">O'yinga kirish</span>
+                        <span class="btn-arrow">➔</span>
+                    </button>
+                </form>
+
+                <!-- Quick Rules Summary -->
+                <div class="rules-box">
+                    <div class="rules-title">📌 O'yin Qoidalari:</div>
+                    <ul class="rules-list">
+                        <li><span>1.</span> Har bir bosqichda mantiqiy yoki matematik savol beriladi.</li>
+                        <li><span>2.</span> To'g'ri javob bersangiz, ball olasiz va keyingi bosqichga o'tasiz.</li>
+                        <li><span>3.</span> Real vaqtda barcha bosqichlarni 1-bo'lib tugatgan o'yinchi g'olib bo'ladi!
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- QR Code Quick Invite Box -->
+                <div class="qr-invite-box" id="qr-invite-box">
+                    <div class="qr-invite-header">
+                        <span class="qr-invite-badge">📱 Boshqa odamlar (telefon) uchun</span>
+                        <h4 class="qr-invite-title">QR Kod orqali o'yinga qo'shilish</h4>
+                    </div>
+                    <div class="qr-invite-body">
+                        <div class="qr-code-wrapper" id="qr-click-to-enlarge" title="Kattalashtirish uchun bosing">
+                            <img id="qr-preview-img" class="qr-image" alt="O'yinga kirish QR kodi" src="" />
+                            <div class="qr-scan-hint">Kattalashtirish 🔍</div>
+                        </div>
+                        <div class="qr-invite-details">
+                            <p class="qr-instruction">Do'stlaringiz o'z telefon kamerasini ushbu QR kodga qaratib,
+                                darhol siz bilan onlayn o'ynashlari mumkin!</p>
+                            <div class="game-url-box">
+                                <span class="game-url-text" id="game-network-url-text">http://localhost:3000</span>
+                                <button type="button" class="btn-copy-link" id="btn-copy-game-link"
+                                    title="Havolani nusxalash">
+                                    <span id="copy-icon">📋</span>
+                                    <span id="copy-label">Nusxalash</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 2: ASOSIY O'YIN MAYDONI (GAMEPLAY)  -->
+        <!-- ========================================== -->
+        <section id="game-screen" class="screen-view hidden">
+            <div class="game-grid-container">
+
+                <!-- Chap yoki O'rta qism: Savol va O'yin maydoni -->
+                <div class="game-center-column">
+
+                    <!-- User Top Status Bar -->
+                    <div class="user-status-card glass-panel">
+                        <div class="user-info">
+                            <span class="user-avatar" id="current-user-avatar">🧠</span>
+                            <div>
+                                <div class="user-name" id="current-user-name">O'yinchi</div>
+                                <div class="user-rank-status" id="current-user-rank-text">Reyting: #1</div>
+                            </div>
+                        </div>
+
+                        <div class="user-stats">
+                            <div class="stat-pill">
+                                <span class="stat-icon">⭐</span>
+                                <span class="stat-value" id="current-user-score">0</span>
+                                <span class="stat-label">ball</span>
+                            </div>
+                            <div class="stat-pill">
+                                <span class="stat-icon">🏁</span>
+                                <span class="stat-value" id="current-stage-display">1 / 12</span>
+                                <span class="stat-label">bosqich</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-container glass-panel">
+                        <div class="progress-labels">
+                            <span class="progress-title">Bosqich Jarayoni:</span>
+                            <span class="progress-percent" id="stage-percent-text">8%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progress-bar-fill" style="width: 8%;"></div>
+                        </div>
+                        <div class="stage-dots-row" id="stage-dots-row">
+                            <!-- Dynamic stage dots -->
+                        </div>
+                    </div>
+
+                    <!-- Active Puzzle Card -->
+                    <div class="puzzle-card glass-panel" id="puzzle-card">
+                        <div class="puzzle-badge-row">
+                            <span class="badge-category" id="puzzle-category">Mantiqiy ketma-ketlik</span>
+                            <span class="badge-difficulty" id="puzzle-difficulty">Oson</span>
+                            <span class="badge-points" id="puzzle-points">+100 ball</span>
+                        </div>
+
+                        <div class="puzzle-header">
+                            <div class="puzzle-icon" id="puzzle-icon">🔢</div>
+                            <h3 class="puzzle-title" id="puzzle-title">1-Bosqich: Sonlar zanjiri</h3>
+                        </div>
+
+                        <div class="puzzle-body">
+                            <p class="puzzle-question" id="puzzle-question">Yuklanmoqda...</p>
+                        </div>
+
+                        <!-- Answer Feedback Alert -->
+                        <div class="feedback-alert hidden" id="answer-feedback">
+                            <span class="feedback-icon" id="feedback-icon">✓</span>
+                            <span class="feedback-text" id="feedback-text">To'g'ri javob!</span>
+                        </div>
+
+                        <!-- Answer Submission Form -->
+                        <form id="answer-form" class="answer-form" autocomplete="off">
+                            <div class="answer-input-box">
+                                <input type="text" id="answer-input" class="custom-input answer-field"
+                                    placeholder="Javobingizni bu yerga yozing..." required autofocus>
+                                <button type="submit" id="btn-submit-answer" class="btn-submit-neon">
+                                    <span>Tekshirish</span>
+                                    <span class="arrow-icon">➔</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Hint Box Section -->
+                        <div class="hint-section">
+                            <button type="button" id="btn-request-hint" class="btn-hint">
+                                <span>💡 Maslahat (Yordam)</span>
+                            </button>
+                            <div class="hint-content hidden" id="hint-content">
+                                <span class="hint-label">Maslahat:</span>
+                                <span class="hint-text" id="hint-text"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Activity Ticker (Real-Time Feed) -->
+                    <div class="activity-feed-panel glass-panel">
+                        <div class="feed-header">
+                            <span class="feed-live-dot"></span>
+                            <span class="feed-title">Jonli O'yin Xabarnomalari</span>
+                        </div>
+                        <div class="feed-stream" id="activity-feed-stream">
+                            <div class="feed-item init">⚡ Musobaqa qizg'in davom etmoqda! Do'stlaringizni chaqiring!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Emoji Reactions Bar -->
+                    <div class="reactions-bar glass-panel">
+                        <span class="reactions-title">Reaksiyalar:</span>
+                        <div class="reactions-list">
+                            <button class="reaction-btn" data-emoji="🧠" title="Aql">🧠</button>
+                            <button class="reaction-btn" data-emoji="🔥" title="Olov">🔥</button>
+                            <button class="reaction-btn" data-emoji="⚡" title="Chaqmoq">⚡</button>
+                            <button class="reaction-btn" data-emoji="👏" title="Qarsaklar">👏</button>
+                            <button class="reaction-btn" data-emoji="🎯" title="Nishon">🎯</button>
+                            <button class="reaction-btn" data-emoji="👑" title="Toj">👑</button>
+                            <button class="reaction-btn" data-emoji="🎉" title="Bayram">🎉</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- O'ng taraf: Jonli Reyting va Musobaqa Jadvali (Sidebar) -->
+                <aside class="leaderboard-sidebar glass-panel">
+                    <div class="leaderboard-header">
+                        <div class="lb-title-group">
+                            <span class="lb-icon">🏆</span>
+                            <h3 class="lb-title">Jonli Reyting</h3>
+                        </div>
+                        <span class="lb-count-badge" id="sidebar-player-count">0 o'yinchi</span>
+                    </div>
+
+                    <!-- Mini Podium (Top 3 current leaders) -->
+                    <div class="mini-podium-preview" id="mini-podium-preview">
+                        <div class="mini-podium-col second" id="podium-preview-2">
+                            <div class="mini-podium-rank">2</div>
+                            <div class="mini-podium-avatar">🥈</div>
+                            <div class="mini-podium-name">Kutilmoqda</div>
+                        </div>
+                        <div class="mini-podium-col first" id="podium-preview-1">
+                            <div class="mini-podium-crown">👑</div>
+                            <div class="mini-podium-rank">1</div>
+                            <div class="mini-podium-avatar">🥇</div>
+                            <div class="mini-podium-name">Yetakchi</div>
+                        </div>
+                        <div class="mini-podium-col third" id="podium-preview-3">
+                            <div class="mini-podium-rank">3</div>
+                            <div class="mini-podium-avatar">🥉</div>
+                            <div class="mini-podium-name">Kutilmoqda</div>
+                        </div>
+                    </div>
+
+                    <!-- Full Live Leaderboard List -->
+                    <div class="leaderboard-scroll" id="leaderboard-list">
+                        <!-- Dynamic Player Rows -->
+                    </div>
+
+                    <div class="leaderboard-footer">
+                        <span>💡 Har bir bosqich qiyinlashib, ko'proq ball beradi!</span>
+                    </div>
+                </aside>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 3: YAKUNIY G'OLIBLAR VA PODIUM MODAL-->
+        <!-- ========================================== -->
+        <div id="winner-modal" class="modal-overlay hidden">
+            <div class="winner-modal-card glass-panel">
+                <div class="winner-sparkles">✨ 🏆 ✨</div>
+                <h2 class="winner-congrats-title" id="winner-headline">TABRIKLAYMIZ!</h2>
+                <p class="winner-congrats-subtitle" id="winner-subline">Barcha mantiqiy va matematik boshqotirmalar
+                    yechildi!</p>
+
+                <!-- Final 1, 2, 3-O'rinlar Podium Vizuali -->
+                <div class="podium-grand-display">
+                    <!-- 2-o'rin -->
+                    <div class="podium-block place-2">
+                        <div class="podium-badge">2-O'RIN 🥈</div>
+                        <div class="podium-avatar" id="podium-silver-avatar">🥈</div>
+                        <div class="podium-name" id="podium-silver-name">Kutilmoqda...</div>
+                        <div class="podium-score" id="podium-silver-score">- ball</div>
+                        <div class="podium-pedestal p2">
+                            <span>2</span>
+                        </div>
+                    </div>
+
+                    <!-- 1-o'rin (Mutloq g'olib) -->
+                    <div class="podium-block place-1">
+                        <div class="podium-crown-icon">👑</div>
+                        <div class="podium-badge champion">MUTLOQ G'OLIB 🥇</div>
+                        <div class="podium-avatar" id="podium-gold-avatar">🥇</div>
+                        <div class="podium-name" id="podium-gold-name">G'olib nomi</div>
+                        <div class="podium-score" id="podium-gold-score">- ball</div>
+                        <div class="podium-pedestal p1">
+                            <span>1</span>
+                        </div>
+                    </div>
+
+                    <!-- 3-o'rin -->
+                    <div class="podium-block place-3">
+                        <div class="podium-badge">3-O'RIN 🥉</div>
+                        <div class="podium-avatar" id="podium-bronze-avatar">🥉</div>
+                        <div class="podium-name" id="podium-bronze-name">Kutilmoqda...</div>
+                        <div class="podium-score" id="podium-bronze-score">- ball</div>
+                        <div class="podium-pedestal p3">
+                            <span>3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="winner-actions">
+                    <button type="button" id="btn-restart-game" class="btn-primary-neon">
+                        <span class="btn-text">🔄 Yana Boshdan O'ynash</span>
+                    </button>
+                    <button type="button" id="btn-close-winner-modal" class="btn-secondary-glass">
+                        <span>Jadvalni ko'rish</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 4: QR KOD VA TAKLIF MODAL           -->
+        <!-- ========================================== -->
+        <div id="qr-modal" class="modal-overlay hidden">
+            <div class="qr-modal-card glass-panel">
+                <button class="modal-close-btn" id="btn-close-qr-modal" aria-label="Yopish">✕</button>
+                <div class="qr-modal-badge">📲 Real-Time Multiplayer Taklifi</div>
+                <h2 class="qr-modal-title">QR Kod Orqali Qo'shilish</h2>
+                <p class="qr-modal-desc">Barcha o'yinchilar bir xil Wi-Fi tarmog'iga ulanib, telefon kamerasini ushbu QR
+                    kodga qaratsin va brauzerda ochsin!</p>
+
+                <div class="qr-big-wrapper">
+                    <img id="qr-modal-big-img" class="qr-modal-image" alt="QR Kod" src="" />
+                </div>
+
+                <div class="qr-modal-url-bar">
+                    <span class="qr-url-display" id="qr-modal-url-display">http://localhost:3000</span>
+                    <button type="button" class="btn-primary-neon btn-modal-copy" id="btn-modal-copy-link">
+                        <span id="modal-copy-icon">📋</span>
+                        <span id="modal-copy-label">Nusxa Olish</span>
+                    </button>
+                </div>
+
+                <div class="qr-modal-instructions">
+                    <div class="qr-step">
+                        <span class="qr-step-num">1</span>
+                        <span>Telefoningiz kamerasini QR kodga qarating</span>
+                    </div>
+                    <div class="qr-step">
+                        <span class="qr-step-num">2</span>
+                        <span>Ekranda chiqqan havolani brauzerda oching</span>
+                    </div>
+                    <div class="qr-step">
+                        <span class="qr-step-num">3</span>
+                        <span>Ismingizni yozib, bellashuvga qo'shiling!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <!-- Socket.io client (CDN first, with local server fallback) -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        if (typeof io === 'undefined') {
+            document.write('<script src="/socket.io/socket.io.js"><\/script>');
+        }
+    </script>
+
+    <!-- Main Client Game Logic -->
+    <script src="index.js"></script>
+</body>
+
+</html>
